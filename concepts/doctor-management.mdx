@@ -1,0 +1,69 @@
+---
+title: "Doctor Registry: Managing Doctor Availability"
+sidebarTitle: "Doctors"
+description: "How the Hospital Management System maintains a doctor registry using a Binary Search Tree with auto-assigned IDs and sorted listing."
+---
+
+The Hospital Management System stores every doctor in a **Binary Search Tree (BST)** keyed by an auto-assigned numeric ID. The BST structure enables fast lookup — O(log n) — when the system validates a doctor during appointment processing. You never choose an ID yourself; the system assigns the next available integer starting at **1** each time you add a doctor.
+
+## Adding a Doctor
+
+Select **option 4** from the main menu. Enter a name of up to **47 characters**. The system assigns the next sequential ID, inserts the new node into the BST, and confirms the addition.
+
+```text
+=== Hospital Simple Menu ===
+...
+Choose an option: 4
+Enter doctor name: Dr. Smith
+Added doctor 1 : Dr. Smith
+```
+
+Adding further doctors continues the counter:
+
+```text
+Choose an option: 4
+Enter doctor name: Dr. Patel
+Added doctor 2 : Dr. Patel
+
+Choose an option: 4
+Enter doctor name: Dr. Jones
+Added doctor 3 : Dr. Jones
+```
+
+## Listing Doctors
+
+Select **option 5** to display all registered doctors. The system performs an **in-order traversal** of the BST (left subtree → root → right subtree), so doctors always appear **sorted by ID** regardless of the order in which they were added.
+
+```text
+Choose an option: 5
+Doctors (id : name):
+  1 : Dr. Smith
+  2 : Dr. Patel
+  3 : Dr. Jones
+```
+
+If no doctors have been registered yet, the system prints:
+
+```text
+(no doctors)
+```
+
+## Doctor IDs
+
+Doctor IDs are **auto-assigned and never reused**. The internal counter (`dnext`) increments with every addition and is never reset, even if you were to remove a doctor. Record the ID printed immediately after adding a doctor — you need it when queuing an appointment request (option 6).
+
+<Tip>
+Run **option 5** to view all doctors and their IDs before creating appointment requests. This prevents you from accidentally supplying an ID that does not match the intended doctor.
+</Tip>
+
+## Looking Up Doctors
+
+When you process an appointment request (option 8), the system calls `bst_find` to locate the doctor by ID. Starting at the BST root, it moves **left** when the target ID is smaller than the current node and **right** when it is larger, reaching the correct node in **O(log n)** comparisons.
+
+If the doctor ID stored in a request no longer exists in the BST at the time of processing, the system discards that request and prints:
+
+```text
+Doctor <id> not found — discarding request
+```
+
+The discarded request is removed from the queue and cannot be recovered. Always verify that a doctor is still registered before processing requests that reference their ID.

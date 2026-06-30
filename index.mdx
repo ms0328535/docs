@@ -1,20 +1,77 @@
 ---
-title: "Introduction"
-description: "Welcome to your project"
+title: "Hospital Management System: DSA-Powered Patient Care"
+sidebarTitle: "Home"
+description: "Manage patients, doctors, and appointments with a fast console application powered by Queues, Stacks, and Binary Search Trees."
 ---
 
-Write a short description of your product here. What it does, who it's for, and what they can accomplish with it.
+Welcome to the **Hospital Management System** — a lightweight, console-based application built entirely in C that helps hospital staff register patients, maintain a doctor registry, queue appointment requests, and schedule (or undo) appointments. Every feature is backed by a carefully chosen classic data structure, so the system stays fast and predictable even as your data grows.
 
-<Tip>
-  Ready to make this your own? Start by editing this page. Update your `docs.json` file to customize your site. Then fill out the [Quickstart](/quickstart) page.
-</Tip>
+<CardGroup cols={2}>
+  <Card title="Quick Start" icon="rocket" href="/quickstart">
+    Get the system compiled and running in minutes with a step-by-step setup guide.
+  </Card>
+  <Card title="Core Concepts" icon="layer-group" href="/concepts/data-structures">
+    Understand how Queues, Stacks, BSTs, and Linked Lists power each feature under the hood.
+  </Card>
+  <Card title="Menu Reference" icon="list" href="/usage/menu-reference">
+    A complete guide to every numbered menu option, its inputs, and its expected output.
+  </Card>
+  <Card title="FAQ" icon="circle-question" href="/reference/faq">
+    Answers to common questions about capacity limits, data persistence, and error messages.
+  </Card>
+</CardGroup>
 
-<Card title="Quickstart" icon="rocket" href="/quickstart">
-  This card links to the quickstart page in your project.
-</Card>
-<Card title="Components" icon="puzzle-piece" href="https://mintlify.com/docs/components">
-  Add cards, callouts, steps, tabs, and more to design and structure your pages.
-</Card>
-<Card title="Settings" icon="gear" href="https://mintlify.com/docs/organize/settings">
-  Set your site name, branding, and navigation in the `docs.json` file.
-</Card>
+---
+
+## Get Up and Running
+
+Follow these steps to go from a fresh terminal to your first scheduled appointment.
+
+<Steps>
+  <Step title="Compile the source">
+    Use any C99-compatible compiler. With GCC, run:
+
+    ```bash
+    gcc -std=c99 -Wall -o hospital project.c
+    ```
+
+    A successful compilation produces the `hospital` executable with no warnings.
+  </Step>
+
+  <Step title="Launch the application">
+    Start the program from your terminal:
+
+    ```bash
+    ./hospital
+    ```
+
+    You will immediately see the **Hospital Simple Menu** with options 0 through 10.
+  </Step>
+
+  <Step title="Add a doctor and register a patient">
+    At the menu prompt, enter **4** to add a doctor, then type a name (e.g., `Dr. Smith`). The system assigns an auto-incremented ID and inserts the record into the BST. Next, enter **1** to register a patient, provide their name (e.g., `Jane Doe`), and note the patient ID that is printed back to you.
+  </Step>
+
+  <Step title="Request and schedule an appointment">
+    Enter **6** to enqueue an appointment request. Supply the patient ID, the doctor ID, and a date/time string (e.g., `2025-09-01 09:00`). The request is placed at the rear of the circular queue. Finally, enter **8** to process the next request — the system dequeues it, confirms both IDs exist, creates a scheduled appointment, and pushes the schedule ID onto the undo stack so you can reverse it with option **9** if needed.
+  </Step>
+</Steps>
+
+---
+
+## Feature Highlights
+
+<CardGroup cols={2}>
+  <Card title="Patient Management" icon="bed-pulse">
+    Add, remove, and list patients stored in a singly linked list. Each patient receives a unique auto-incremented ID the moment they are registered.
+  </Card>
+  <Card title="Doctor Registry" icon="user-doctor">
+    Doctors are organised in a Binary Search Tree keyed by ID, enabling fast look-up during scheduling. An in-order traversal always displays them in sorted order.
+  </Card>
+  <Card title="Appointment Queue" icon="clock-rotate-left">
+    Appointment requests are held in a circular FIFO queue with a capacity of 8 slots. Requests are processed one at a time in the order they were submitted.
+  </Card>
+  <Card title="Undo Scheduling" icon="rotate-left">
+    Every confirmed appointment is pushed onto a LIFO stack (capacity 50). Enter **9** at any time to instantly cancel the most recently scheduled appointment.
+  </Card>
+</CardGroup>

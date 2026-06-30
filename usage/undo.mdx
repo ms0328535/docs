@@ -1,0 +1,79 @@
+---
+title: "Undo a Scheduled Appointment"
+sidebarTitle: "Undo"
+description: "How to reverse a scheduling decision using the undo stack in the Hospital Management System — what gets undone and what the limits are."
+---
+
+The Hospital Management System maintains a LIFO (last-in, first-out) undo stack alongside the appointment schedule. Whenever you need to reverse a scheduling decision, choose option **9** from the menu. The system deactivates the most recently created active appointment — without deleting any data — so you always have a full audit trail of what happened during the session.
+
+## How Undo Works
+
+The undo mechanism is built on a fixed-capacity integer stack that tracks scheduled appointment IDs in the order they were created.
+
+- **Each time option 8 processes a request successfully**, the new appointment's ID is pushed onto the undo stack. This happens automatically; you do not need to do anything extra.
+- **Each time you choose option 9**, the system pops the top ID from the stack and looks up the corresponding appointment in the schedule array. It then sets that appointment's `active` flag to `0`, marking it as **undone**.
+- **Undone appointments remain visible** when you list the schedule with option 10. They appear alongside active appointments with the status label `undone` rather than `active`. This preserves a complete session history.
+- **The appointment's slot in the schedule array is never physically removed.** The record stays in place; only its status changes. This means the total count of stored appointments (active + undone) continues to grow toward the 100-appointment session limit.
+
+## Using Undo
+
+The following example shows what the schedule looks like before and after calling option 9.
+
+**Step 1 — Schedule an appointment (option 8):**
+
+```text
+=== Hospital Simple Menu ===
+Choose an option: 8
+Scheduled appointment s4: patient Bob Tanaka (p2) -> doctor Dr. Priya Nair (d3) at 2025-08-12 14:00 (from req #5)
+```
+
+**Step 2 — View the schedule before undo (option 10):**
+
+```text
+=== Hospital Simple Menu ===
+Choose an option: 10
+Scheduled appointments:
+  s1: Alice Fernandez (p1) -> Dr. Marcus Obi (d2) at 2025-08-10 09:00 [active]
+  s2: Carol Singh (p3) -> Dr. Sarah Chen (d1) at 2025-08-10 11:30 [active]
+  s3: Bob Tanaka (p2) -> Dr. Sarah Chen (d1) at 2025-08-11 10:00 [active]
+  s4: Bob Tanaka (p2) -> Dr. Priya Nair (d3) at 2025-08-12 14:00 [active]
+```
+
+**Step 3 — Undo the last appointment (option 9):**
+
+```text
+=== Hospital Simple Menu ===
+Choose an option: 9
+Undid appointment s4 (patient Bob Tanaka p2 doctor Dr. Priya Nair d3 at 2025-08-12 14:00)
+```
+
+**Step 4 — View the schedule after undo (option 10):**
+
+```text
+=== Hospital Simple Menu ===
+Choose an option: 10
+Scheduled appointments:
+  s1: Alice Fernandez (p1) -> Dr. Marcus Obi (d2) at 2025-08-10 09:00 [active]
+  s2: Carol Singh (p3) -> Dr. Sarah Chen (d1) at 2025-08-10 11:30 [active]
+  s3: Bob Tanaka (p2) -> Dr. Sarah Chen (d1) at 2025-08-11 10:00 [active]
+  s4: Bob Tanaka (p2) -> Dr. Priya Nair (d3) at 2025-08-12 14:00 [undone]
+```
+
+Appointment **s4** is now `undone`. The other three appointments are unaffected. Call option **9** again to undo **s3**, then **s2**, and so on — each call works one step further back.
+
+## Limits
+
+- **The undo stack holds up to 50 entries** (`STCAP = 50`). If you schedule 50 appointments without calling undo once, the stack is full and you will see `undo stack full` on any further scheduling attempt. In practice, a mix of scheduling and undoing keeps the stack well within capacity.
+- **Undo always targets the most recently scheduled active appointment.** You cannot skip over a recent entry to undo an older one. The stack is strictly LIFO.
+- **If the undo stack is empty** (no appointments have been scheduled, or all pushed IDs have already been popped), option 9 prints:
+  ```text
+  Nothing to undo
+  ```
+- **If the same appointment ID is somehow popped twice** (for example, if the internal state is manipulated externally), the system detects that the appointment is already inactive and prints:
+  ```text
+  Appointment s<id> already undone
+  ```
+
+<Warning>
+  Undo does **not** restore the original appointment request to the queue. Once a request has been processed with option 8, it is permanently removed from the queue regardless of whether you later undo the resulting appointment. If you need to re-schedule an undone appointment, you must re-submit the request manually using option 6 and process it again with option 8.
+</Warning>

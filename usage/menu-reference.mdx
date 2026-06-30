@@ -1,0 +1,246 @@
+---
+title: "Menu Reference: All 10 Options Explained"
+sidebarTitle: "Menu Reference"
+description: "Complete reference for every option in the Hospital Management System console menu, including inputs, outputs, and edge cases."
+---
+
+Each time you run the Hospital Management System, the application prints a numbered menu and waits for your input. Enter the number that corresponds to the action you want to perform and press **Enter** to execute it. The menu repeats after every action so you can continue working until you choose **0** to exit.
+
+```text
+=== Hospital Simple Menu ===
+1  - Add patient
+2  - Delete patient
+3  - List patients
+4  - Add doctor
+5  - List doctors
+6  - Enqueue appointment request
+7  - Show request queue
+8  - Process next request (schedule)
+9  - Undo last scheduled appointment
+10 - Show scheduled appointments
+0  - Exit
+```
+
+<AccordionGroup>
+
+  <Accordion title="1 — Add Patient">
+    Registers a new patient and assigns them an auto-incremented integer ID.
+
+    **Input:** Patient name — up to 47 usable characters (input is silently truncated beyond that length).
+
+    **Output:**
+    ```text
+    Added patient <id> : <name>
+    ```
+
+    **Notes:**
+    - IDs start at 1 and increment with every successful addition.
+    - Deleted patient IDs are never reused; the next addition always receives the next available integer.
+    - Patients are stored internally as a singly linked list, with the most recently added patient at the head.
+  </Accordion>
+
+  <Accordion title="2 — Delete Patient">
+    Removes a patient record from the system by ID.
+
+    **Input:** Patient ID (integer).
+
+    **Output on success:**
+    ```text
+    Deleted patient <id>
+    ```
+
+    **Output when ID is not found:**
+    ```text
+    Patient <id> not found
+    ```
+
+    <Warning>
+      Any scheduled appointments that reference this patient are preserved in the schedule history but will display `[deleted]` in place of the patient name when you view them with option 10 or undo them with option 9.
+    </Warning>
+  </Accordion>
+
+  <Accordion title="3 — List Patients">
+    Displays every registered patient currently in the system.
+
+    **Input:** None.
+
+    **Output (when patients exist):**
+    ```text
+    Patients (id : name):
+      <id> : <name>
+      ...
+    ```
+
+    Patients are listed most recently added first, because the linked list is prepended on each addition.
+
+    **Output when no patients are registered:**
+    ```text
+    (no patients)
+    ```
+  </Accordion>
+
+  <Accordion title="4 — Add Doctor">
+    Registers a new doctor and assigns them an auto-incremented integer ID.
+
+    **Input:** Doctor name — up to 47 usable characters (input is silently truncated beyond that length).
+
+    **Output:**
+    ```text
+    Added doctor <id> : <name>
+    ```
+
+    **Notes:**
+    - IDs start at 1 and increment with every successful addition.
+    - Doctors are stored in a Binary Search Tree (BST) keyed by ID, which means listing them (option 5) always produces output sorted by ID regardless of insertion order.
+  </Accordion>
+
+  <Accordion title="5 — List Doctors">
+    Displays every registered doctor currently in the system.
+
+    **Input:** None.
+
+    **Output (when doctors exist):**
+    ```text
+    Doctors (id : name):
+      <id> : <name>
+      ...
+    ```
+
+    Doctors are always listed in ascending ID order because the output is produced by an in-order traversal of the BST.
+
+    **Output when no doctors are registered:**
+    ```text
+    (no doctors)
+    ```
+  </Accordion>
+
+  <Accordion title="6 — Enqueue Appointment Request">
+    Adds a new appointment request to the end of the circular FIFO queue.
+
+    **Inputs (prompted in sequence):**
+    1. Patient ID (integer)
+    2. Doctor ID (integer)
+    3. Date/time string — free-form text, up to 63 usable characters
+
+    **Output on success:**
+    ```text
+    Enqueued request #<id>  patient <pid> -> doctor <did>  at <time>
+    ```
+
+    **Output when the queue is full:**
+    ```text
+    Request queue is full
+    ```
+
+    The queue holds a maximum of **8 requests** at one time. Use option 8 to process existing requests before adding more.
+
+    **Note:** The system does **not** validate whether the patient ID or doctor ID exists at enqueue time. Validation happens when you process the request with option 8. If either record has been deleted by then, the request is discarded at that point.
+  </Accordion>
+
+  <Accordion title="7 — Show Request Queue">
+    Displays all pending appointment requests in FIFO order (oldest first).
+
+    **Input:** None.
+
+    **Output (when requests exist):**
+    ```text
+    Request queue :
+      #<id>  p<pid> -> d<did>  @ <time>
+      ...
+    ```
+
+    **Output when the queue is empty:**
+    ```text
+    (request queue empty)
+    ```
+  </Accordion>
+
+  <Accordion title="8 — Process Next Request (Schedule)">
+    Dequeues the oldest pending request, validates the referenced patient and doctor, and — if both exist — creates a confirmed scheduled appointment.
+
+    **Input:** None.
+
+    **Output on success:**
+    ```text
+    Scheduled appointment s<sid>: patient <name> (p<pid>) -> doctor <name> (d<did>) at <time> (from req #<rid>)
+    ```
+
+    **Output when the queue is empty:**
+    ```text
+    No requests to process
+    ```
+
+    **Output when the patient no longer exists:**
+    ```text
+    Patient <pid> not found — discarding request
+    ```
+
+    **Output when the doctor no longer exists:**
+    ```text
+    Doctor <did> not found — discarding request
+    ```
+
+    **Output when the schedule is at capacity (100 appointments):**
+    ```text
+    Scheduled storage full
+    ```
+
+    Each successfully scheduled appointment is pushed onto the undo stack so you can reverse it with option 9.
+  </Accordion>
+
+  <Accordion title="9 — Undo Last Scheduled Appointment">
+    Pops the most recently scheduled appointment ID from the undo stack and marks that appointment as **undone**.
+
+    **Input:** None.
+
+    **Output on success:**
+    ```text
+    Undid appointment s<sid> (patient <name> p<pid> doctor <name> d<did> at <time>)
+    ```
+
+    **Output when there is nothing to undo:**
+    ```text
+    Nothing to undo
+    ```
+
+    **Notes:**
+    - The appointment record is not deleted; it remains visible in option 10 with status `undone`.
+    - Undo is strictly last-in-first-out. You cannot selectively undo an older appointment.
+    - The undo stack holds up to 50 entries.
+  </Accordion>
+
+  <Accordion title="10 — Show Scheduled Appointments">
+    Lists every appointment that has ever been scheduled in this session, including those that have been undone.
+
+    **Input:** None.
+
+    **Output (when appointments exist):**
+    ```text
+    Scheduled appointments:
+      s<sid>: <pname> (p<pid>) -> <dname> (d<did>) at <time> [active]
+      s<sid>: <pname> (p<pid>) -> <dname> (d<did>) at <time> [undone]
+      ...
+    ```
+
+    **Output when no appointments have been scheduled:**
+    ```text
+    (no scheduled appointments)
+    ```
+
+    If the patient or doctor for an entry has since been deleted, the name field shows `[deleted]`.
+  </Accordion>
+
+  <Accordion title="0 — Exit">
+    Ends the session, frees all allocated memory, and exits the program.
+
+    **Input:** None.
+
+    **Output:**
+    ```text
+    Goodbye
+    ```
+
+    All patient, doctor, appointment, and queue data is cleared from memory. There is no file-based persistence — records do not survive between sessions.
+  </Accordion>
+
+</AccordionGroup>

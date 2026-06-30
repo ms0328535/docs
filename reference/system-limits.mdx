@@ -1,0 +1,59 @@
+---
+title: "System Limits and Capacity Reference"
+sidebarTitle: "System Limits"
+description: "Hard limits for the Hospital Management System: queue capacity, undo stack depth, schedule slots, and name length constraints."
+---
+
+The Hospital Management System enforces fixed, compile-time capacities defined as C preprocessor macros at the top of `project.c`. None of these values can be changed at runtime — they are baked into the binary at build time. Understanding them helps you plan your session and avoid unexpected errors.
+
+## Capacity Constants
+
+| Constant | Value | What it limits |
+|----------|-------|----------------|
+| `QCAP` | 8 | Maximum pending appointment requests in the queue at one time |
+| `STCAP` | 50 | Maximum undo history entries (scheduled appointments that can be undone) |
+| `SCHED_CAP` | 100 | Maximum total scheduled appointments (active + undone) stored in a session |
+| `NAME_LEN` | 48 | Maximum characters for a patient or doctor name (including the null terminator, so **47 usable characters**) |
+| `TIME_LEN` | 64 | Maximum characters for a date/time string (including the null terminator, so **63 usable characters**) |
+
+## What Happens When Limits Are Reached
+
+Each limit produces a specific message and a specific behavior when you hit it.
+
+**Queue full (`QCAP = 8`)**
+
+When you try to enqueue a ninth request before processing any, the system prints:
+
+```text
+Request queue is full
+```
+
+Your new request is discarded. Use option **8** to process one or more existing requests and free up slots, then re-submit the request with option **6**.
+
+---
+
+**Undo stack full (`STCAP = 50`)**
+
+If you successfully schedule 50 appointments without calling option **9** even once, the undo stack is exhausted. Any subsequent attempt to schedule an additional appointment will print:
+
+```text
+undo stack full
+```
+
+The scheduling operation is still attempted for the queue item (the appointment record is written and the request is consumed), but the new appointment's ID is not pushed — meaning it cannot be undone. This situation is only reached after 50 consecutive process-without-undo cycles, which is uncommon in normal use.
+
+---
+
+**Schedule storage full (`SCHED_CAP = 100`)**
+
+Once the session has accumulated 100 appointment records (active and undone combined), the system prints:
+
+```text
+Scheduled storage full
+```
+
+The dequeued request is discarded even if both the patient and doctor are valid. This is a hard session ceiling.
+
+<Note>
+  All data is held in memory for the duration of the session. When you exit with option **0**, every patient, doctor, appointment, and queue record is freed and cleared. There is no file-based persistence — your data does not survive between sessions. Start a new run of the program to begin a fresh session.
+</Note>

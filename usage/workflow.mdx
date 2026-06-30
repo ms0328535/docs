@@ -1,0 +1,176 @@
+---
+title: "Typical Hospital Workflow: End-to-End Walkthrough"
+sidebarTitle: "Workflow"
+description: "A step-by-step walkthrough of a complete hospital management session: registering staff and patients, queuing requests, and confirming appointments."
+---
+
+This walkthrough guides you through a realistic Hospital Management System session from start to finish. You will register doctors and patients, submit appointment requests, confirm them through the processing queue, review the schedule, and correct a mistake with the undo feature. Follow each step in order and use the terminal interactions as a reference for what to type and what to expect.
+
+<Steps>
+
+  <Step title="Register Doctors (Option 4)">
+    Start by adding the doctors who will be receiving appointments. Choose option **4** at the menu for each doctor.
+
+    ```text
+    === Hospital Simple Menu ===
+    Choose an option: 4
+    Enter doctor name: Dr. Sarah Chen
+    Added doctor 1 : Dr. Sarah Chen
+
+    === Hospital Simple Menu ===
+    Choose an option: 4
+    Enter doctor name: Dr. Marcus Obi
+    Added doctor 2 : Dr. Marcus Obi
+
+    === Hospital Simple Menu ===
+    Choose an option: 4
+    Enter doctor name: Dr. Priya Nair
+    Added doctor 3 : Dr. Priya Nair
+    ```
+
+    You now have doctors with IDs **1**, **2**, and **3**. Keep these IDs handy — you will need them when you queue appointment requests.
+  </Step>
+
+  <Step title="Register Patients (Option 1)">
+    Add the patients who need appointments. Choose option **1** for each patient.
+
+    ```text
+    === Hospital Simple Menu ===
+    Choose an option: 1
+    Enter patient name: Alice Fernandez
+    Added patient 1 : Alice Fernandez
+
+    === Hospital Simple Menu ===
+    Choose an option: 1
+    Enter patient name: Bob Tanaka
+    Added patient 2 : Bob Tanaka
+
+    === Hospital Simple Menu ===
+    Choose an option: 1
+    Enter patient name: Carol Singh
+    Added patient 3 : Carol Singh
+    ```
+
+    Patients are assigned IDs **1**, **2**, and **3** in the order you added them.
+  </Step>
+
+  <Step title="Verify Registrations (Options 3 and 5)">
+    Confirm that all records were saved correctly before proceeding. Use option **3** to list patients and option **5** to list doctors.
+
+    ```text
+    === Hospital Simple Menu ===
+    Choose an option: 3
+    Patients (id : name):
+      3 : Carol Singh
+      2 : Bob Tanaka
+      1 : Alice Fernandez
+
+    === Hospital Simple Menu ===
+    Choose an option: 5
+    Doctors (id : name):
+      1 : Dr. Sarah Chen
+      2 : Dr. Marcus Obi
+      3 : Dr. Priya Nair
+    ```
+
+    Patients appear most recently added first (linked list head). Doctors appear sorted by ID (BST in-order traversal).
+  </Step>
+
+  <Step title="Queue Appointment Requests (Option 6)">
+    Submit appointment requests for the patients you just registered. Choose option **6** and provide a patient ID, doctor ID, and a free-form date/time string for each request.
+
+    ```text
+    === Hospital Simple Menu ===
+    Choose an option: 6
+    Enter patient id: 1
+    Enter doctor id: 2
+    Enter date/time (string): 2025-08-10 09:00
+    Enqueued request #1  patient 1 -> doctor 2  at 2025-08-10 09:00
+
+    === Hospital Simple Menu ===
+    Choose an option: 6
+    Enter patient id: 3
+    Enter doctor id: 1
+    Enter date/time (string): 2025-08-10 11:30
+    Enqueued request #2  patient 3 -> doctor 1  at 2025-08-10 11:30
+    ```
+
+    You now have two pending requests in the queue.
+  </Step>
+
+  <Step title="View the Pending Queue (Option 7)">
+    Before processing, use option **7** to confirm what is waiting in the queue and in what order it will be handled.
+
+    ```text
+    === Hospital Simple Menu ===
+    Choose an option: 7
+    Request queue :
+      #1  p1 -> d2  @ 2025-08-10 09:00
+      #2  p3 -> d1  @ 2025-08-10 11:30
+    ```
+
+    Requests are listed in FIFO order. Request **#1** will be processed first.
+  </Step>
+
+  <Step title="Process Each Request (Option 8)">
+    Convert each pending request into a confirmed scheduled appointment by choosing option **8**. The system validates both IDs, creates the appointment, and pushes it onto the undo stack.
+
+    ```text
+    === Hospital Simple Menu ===
+    Choose an option: 8
+    Scheduled appointment s1: patient Alice Fernandez (p1) -> doctor Dr. Marcus Obi (d2) at 2025-08-10 09:00 (from req #1)
+
+    === Hospital Simple Menu ===
+    Choose an option: 8
+    Scheduled appointment s2: patient Carol Singh (p3) -> doctor Dr. Sarah Chen (d1) at 2025-08-10 11:30 (from req #2)
+    ```
+
+    Both requests are now fully scheduled. The queue is empty.
+  </Step>
+
+  <Step title="Review the Confirmed Schedule (Option 10)">
+    Use option **10** to see all scheduled appointments, their status, and the patient and doctor details.
+
+    ```text
+    === Hospital Simple Menu ===
+    Choose an option: 10
+    Scheduled appointments:
+      s1: Alice Fernandez (p1) -> Dr. Marcus Obi (d2) at 2025-08-10 09:00 [active]
+      s2: Carol Singh (p3) -> Dr. Sarah Chen (d1) at 2025-08-10 11:30 [active]
+    ```
+
+    Both appointments show status `active`. The session now has a clean, confirmed schedule.
+  </Step>
+
+  <Step title="Undo if Needed (Option 9)">
+    Suppose you scheduled the second appointment by mistake. Use option **9** to reverse it. Undo always targets the most recently scheduled appointment.
+
+    ```text
+    === Hospital Simple Menu ===
+    Choose an option: 9
+    Undid appointment s2 (patient Carol Singh p3 doctor Dr. Sarah Chen d1 at 2025-08-10 11:30)
+    ```
+
+    Check option **10** again to confirm the status change:
+
+    ```text
+    === Hospital Simple Menu ===
+    Choose an option: 10
+    Scheduled appointments:
+      s1: Alice Fernandez (p1) -> Dr. Marcus Obi (d2) at 2025-08-10 09:00 [active]
+      s2: Carol Singh (p3) -> Dr. Sarah Chen (d1) at 2025-08-10 11:30 [undone]
+    ```
+
+    Appointment **s2** is now marked `undone`. Appointment **s1** remains `active`. You can re-queue the request for Carol Singh using option **6** and process it again when ready.
+  </Step>
+
+</Steps>
+
+## Tips for Managing a Busy Queue
+
+- **Process regularly to avoid queue overflow.** The queue holds a maximum of **8 pending requests**. If you try to enqueue a ninth, you will see `Request queue is full`. Choose option **8** to process existing requests and free up slots before submitting more.
+- **Check queue depth before submitting.** Use option **7** to see how many requests are pending. If you are close to the 8-request limit, process some before adding more.
+
+<Tip>
+  Keep a written note of your current doctor and patient IDs. Because IDs are assigned sequentially and never reused after deletions, a quick reference list lets you enter them accurately and quickly — especially during a busy session with many records.
+</Tip>

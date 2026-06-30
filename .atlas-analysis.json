@@ -1,0 +1,69 @@
+{
+  "projectType": "general",
+  "projectName": "Hospital Management System",
+  "projectDescription": "A console-based C application for managing hospital patients, doctors, and appointment scheduling using classic data structures (Queue, Stack, BST, and Linked List).",
+  "theme": "almond",
+  "primaryColor": "#2E7D6B",
+  "lightColor": "#E8F5F1",
+  "darkColor": "#1A4D3F",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Guide",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "concepts/data-structures",
+              "concepts/patient-management",
+              "concepts/doctor-management",
+              "concepts/appointment-scheduling"
+            ]
+          },
+          {
+            "group": "Usage",
+            "pages": [
+              "usage/menu-reference",
+              "usage/workflow",
+              "usage/undo"
+            ]
+          },
+          {
+            "group": "Reference",
+            "pages": [
+              "reference/system-limits",
+              "reference/building",
+              "reference/faq"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Patient registration, lookup, and deletion via a singly linked list",
+    "Doctor registry using a binary search tree (BST) for efficient lookups",
+    "FIFO appointment request queue (circular array) for fair scheduling",
+    "LIFO undo stack to reverse the most recently scheduled appointment",
+    "Menu-driven console interface with a single-file C implementation"
+  ],
+  "publicApiSurface": [
+    "Option 1 — Add patient",
+    "Option 2 — Delete patient",
+    "Option 3 — List patients",
+    "Option 4 — Add doctor",
+    "Option 5 — List doctors",
+    "Option 6 — Enqueue appointment request",
+    "Option 7 — Show request queue",
+    "Option 8 — Process next request (schedule)",
+    "Option 9 — Undo last scheduled appointment",
+    "Option 10 — Show scheduled appointments"
+  ]
+}

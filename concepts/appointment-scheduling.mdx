@@ -1,0 +1,110 @@
+---
+title: "Appointment Scheduling: Queue, Process, and Confirm"
+sidebarTitle: "Appointments"
+description: "How the Hospital Management System queues appointment requests and converts them into confirmed scheduled appointments using FIFO ordering."
+---
+
+Appointments in the Hospital Management System flow through two distinct stages. First, you submit a **request** — it enters a pending queue and waits. Then you explicitly **process** that request — the system validates it, converts it into a confirmed scheduled appointment, and records it for review. This two-stage design lets you batch up multiple requests before committing any of them.
+
+## The Request Queue
+
+The request queue is a **circular FIFO queue with a fixed capacity of 8** (`QCAP = 8`). Requests are served in the exact order they were submitted — the oldest pending request is always processed first.
+
+Each entry in the queue stores:
+
+| Field | Description |
+|---|---|
+| Request number (`id`) | Auto-assigned sequential integer (#1, #2, …) |
+| Patient ID (`pid`) | The ID of the patient requesting the appointment |
+| Doctor ID (`did`) | The ID of the intended doctor |
+| Date/time (`t`) | A free-form string up to 63 characters |
+
+When all 8 slots are occupied, any further enqueue attempt is rejected immediately:
+
+```text
+Request queue is full
+```
+
+The rejected request is not saved anywhere — you must resubmit it after an existing request has been processed and its slot freed.
+
+## Enqueuing a Request — Option 6
+
+Select **option 6** to add a new appointment request to the queue. You supply a patient ID, a doctor ID, and a date/time string. The date/time field is free-form text up to **63 characters** (for example `2024-06-01 09:00`); the system stores it exactly as you enter it without validation.
+
+```text
+Choose an option: 6
+Enter patient id: 1
+Enter doctor id: 2
+Enter date/time (string): 2024-06-01 09:00
+Enqueued request #1  patient 1 -> doctor 2  at 2024-06-01 09:00
+```
+
+The printed confirmation shows the auto-assigned request number, the patient ID, the doctor ID, and the date/time string. Note that the system does **not** verify whether the patient or doctor IDs exist at enqueue time — validation happens only when you process the request.
+
+## Processing a Request — Option 8
+
+Select **option 8** to dequeue the oldest pending request and attempt to confirm it as a scheduled appointment.
+
+The system:
+
+1. Removes the front request from the queue.
+2. Looks up the patient ID in the linked list.
+3. Looks up the doctor ID in the BST.
+4. If the patient is not found, discards the request:
+   ```text
+   Patient <id> not found — discarding request
+   ```
+5. If the doctor is not found, discards the request:
+   ```text
+   Doctor <id> not found — discarding request
+   ```
+6. If both are found, creates a confirmed scheduled appointment, assigns it a schedule ID (`s1`, `s2`, …), and pushes that ID onto the undo stack.
+
+A successful confirmation prints:
+
+```text
+Choose an option: 8
+Scheduled appointment s1: patient Alice Nguyen (p1) -> doctor Dr. Patel (d2) at 2024-06-01 09:00 (from req #1)
+```
+
+A discarded request is removed from the queue permanently. You must re-enqueue it manually if you still want the appointment scheduled.
+
+## Viewing the Queue — Option 7
+
+Select **option 7** to list all pending (unprocessed) requests currently in the queue. Requests are displayed in FIFO order — the entry at the top is the one that will be processed next.
+
+```text
+Choose an option: 7
+Request queue :
+  #1  p1 -> d2  @ 2024-06-01 09:00
+  #2  p2 -> d1  @ 2024-06-03 14:30
+```
+
+Each line shows the request number, patient ID, doctor ID, and date/time string. If the queue is empty:
+
+```text
+(request queue empty)
+```
+
+## Viewing Scheduled Appointments — Option 10
+
+Select **option 10** to see every appointment that has been confirmed by processing, including those that have since been undone. Each row shows the schedule ID, patient name and ID, doctor name and ID, date/time, and current status.
+
+```text
+Choose an option: 10
+Scheduled appointments:
+  s1: Alice Nguyen (p1) -> Dr. Patel (d2) at 2024-06-01 09:00 [active]
+  s2: Bob Martinez (p2) -> Dr. Smith (d1) at 2024-06-03 14:30 [undone]
+```
+
+The **status** column reflects whether the appointment is currently active or was reversed by the undo operation (option 9). If a patient or doctor referenced by a scheduled appointment has since been deleted, their name appears as `[deleted]` while their ID is still shown.
+
+If no appointments have been confirmed yet:
+
+```text
+(no scheduled appointments)
+```
+
+<Note>
+Processing is **manual** — the system never advances the queue automatically. You must select **option 8** each time you want to convert one pending request into a confirmed appointment. If you have multiple requests waiting, call option 8 once per request.
+</Note>

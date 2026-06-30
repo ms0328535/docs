@@ -1,0 +1,95 @@
+---
+title: "Building from Source"
+sidebarTitle: "Building"
+description: "How to compile the Hospital Management System from its single C source file on Linux, macOS, and Windows using GCC or Clang."
+---
+
+The entire Hospital Management System is contained in a single C source file — `project.c` — with no external libraries or third-party dependencies. Any C99-compatible compiler can build it in one command. You do not need a build system such as Make or CMake.
+
+## Requirements
+
+| Requirement | Details |
+|-------------|---------|
+| **C compiler** | GCC 4.8+, Clang 3.5+, or MSVC 2015+ |
+| **C standard library** | Included automatically with every supported compiler |
+| **Third-party dependencies** | None |
+
+The program uses only `<stdio.h>`, `<stdlib.h>`, and `<string.h>` from the standard library.
+
+## Linux / macOS
+
+Open a terminal in the directory that contains `project.c` and run one of the following commands.
+
+<CodeGroup>
+
+```bash gcc
+gcc -o hospital project.c
+./hospital
+```
+
+```bash clang
+clang -o hospital project.c
+./hospital
+```
+
+</CodeGroup>
+
+Both produce an executable named `hospital` in the current directory.
+
+## Windows (MinGW)
+
+If you have [MinGW](https://www.mingw-w64.org/) installed and `gcc` is on your `PATH`, open a Command Prompt or PowerShell window in the directory containing `project.c` and run:
+
+```bash
+gcc -o hospital.exe project.c
+hospital.exe
+```
+
+<Note>
+  You can also use **WSL (Windows Subsystem for Linux)** on Windows 10 and later. Install a Linux distribution from the Microsoft Store, open a WSL terminal, navigate to your `project.c` directory, and follow the Linux instructions above.
+</Note>
+
+## Compiler Flags (Optional)
+
+The default build command works without any extra flags. The following optional flags are useful during development and testing.
+
+| Flag | Purpose |
+|------|---------|
+| `-Wall -Wextra` | Enable extra compiler warnings to catch potential issues |
+| `-O2` | Enable optimization for faster execution |
+| `-g` | Include debug symbols for use with `gdb` or `lldb` |
+
+Example using all three:
+
+```bash
+gcc -Wall -Wextra -O2 -o hospital project.c
+```
+
+You can mix and match these flags freely. For a production build, `-O2` is sufficient. For debugging, use `-g` and omit `-O2`.
+
+## Verifying the Build
+
+Run the compiled binary and check that the menu appears:
+
+```bash
+./hospital
+```
+
+If you see the following output, your build succeeded and the application is ready to use:
+
+```text
+
+=== Hospital Simple Menu ===
+1  - Add patient
+2  - Delete patient
+3  - List patients
+4  - Add doctor
+5  - List doctors
+6  - Enqueue appointment request
+7  - Show request queue
+8  - Process next request (schedule)
+9  - Undo last scheduled appointment
+10 - Show scheduled appointments
+0  - Exit
+Choose an option:
+```

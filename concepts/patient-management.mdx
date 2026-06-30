@@ -1,0 +1,72 @@
+---
+title: "Patient Management: Add, Find, and Remove Patients"
+sidebarTitle: "Patients"
+description: "How the Hospital Management System stores and manages patient records using a singly linked list with auto-assigned IDs."
+---
+
+The Hospital Management System stores every patient as a node in a singly linked list. You never assign an ID yourself — the system automatically issues the next available integer starting at **1** and increments it with every new patient. This keeps patient records unique and easy to reference when you queue an appointment request.
+
+## Adding a Patient
+
+Select **option 1** from the main menu. The system prompts you for a name of up to **47 characters**. After you enter the name, the system assigns the next sequential ID, prepends the new node to the head of the patient list, and confirms the addition.
+
+```text
+=== Hospital Simple Menu ===
+...
+Choose an option: 1
+Enter patient name: Alice Nguyen
+Added patient 1 : Alice Nguyen
+```
+
+Adding a second patient continues the counter:
+
+```text
+Choose an option: 1
+Enter patient name: Bob Martinez
+Added patient 2 : Bob Martinez
+```
+
+## Viewing Patients
+
+Select **option 3** to display all current patients. Because new patients are prepended to the head of the linked list, the list always appears in **most-recently-added order** — the newest patient appears first.
+
+```text
+Choose an option: 3
+Patients (id : name):
+  2 : Bob Martinez
+  1 : Alice Nguyen
+```
+
+If no patients have been added yet, the system prints:
+
+```text
+(no patients)
+```
+
+## Deleting a Patient
+
+Select **option 2** to remove a patient by ID. The system traverses the linked list, unlinks the matching node, and frees its memory.
+
+```text
+Choose an option: 2
+Enter patient id to delete: 1
+Deleted patient 1
+```
+
+If you supply an ID that does not exist, the system prints an error and leaves the list unchanged:
+
+```text
+Choose an option: 2
+Enter patient id to delete: 99
+Patient 99 not found
+```
+
+<Warning>
+Deleting a patient does **not** remove their scheduled appointments from the schedule list. Any confirmed appointments that referenced that patient remain in the schedule but display **`[deleted]`** in place of the patient's name when you view scheduled appointments (option 10).
+</Warning>
+
+## Patient IDs
+
+Patient IDs are **never reused**. The internal counter (`pnext`) only ever increments — even after a deletion the freed ID is gone permanently. For example, if you add patients 1 and 2, delete patient 1, and then add a new patient, the new patient receives ID 3, not 1.
+
+Before referencing a patient in an appointment request, use **option 3** to list all current patients and confirm the correct ID. Writing down the ID printed immediately after adding a patient is the most reliable approach.

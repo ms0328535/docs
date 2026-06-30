@@ -1,0 +1,56 @@
+---
+title: "Frequently Asked Questions"
+sidebarTitle: "FAQ"
+description: "Answers to common questions about using the Hospital Management System: data persistence, capacity limits, IDs, and error messages."
+---
+
+Here are quick answers to the most common questions about using the Hospital Management System. If you are troubleshooting an unexpected message or behaviour, start here before diving into the full reference.
+
+<AccordionGroup>
+
+  <Accordion title="Are my records saved when I exit?">
+    No. All data lives in memory during a session. When you choose option **0** (Exit), every patient, doctor, appointment request, and scheduled appointment is freed from memory and the program terminates. There is currently no file-based persistence — starting a new run of the program always begins with a completely empty state.
+  </Accordion>
+
+  <Accordion title="Why was my appointment request discarded when I processed it?">
+    The system validates patient and doctor IDs at **process time** (option 8), not at **enqueue time** (option 6). If you deleted the patient or doctor between queuing the request and processing it, the system cannot find either record and discards the request with one of these messages:
+
+    ```text
+    Patient <pid> not found — discarding request
+    ```
+    ```text
+    Doctor <did> not found — discarding request
+    ```
+
+    To avoid this, verify that both IDs still exist (options 3 and 5) before processing the queue, and avoid deleting records that have pending requests associated with them.
+  </Accordion>
+
+  <Accordion title="The queue is full. What do I do?">
+    The request queue holds a maximum of **8 pending requests**. When it is full, the system prints `Request queue is full` and rejects new submissions. Use option **8** to process one or more existing requests and free up slots, then re-submit your request with option **6**.
+  </Accordion>
+
+  <Accordion title="Can I undo more than one appointment in a row?">
+    Yes. Each call to option **9** undoes one appointment, working backwards through your scheduling history. You can call option 9 repeatedly to reverse multiple appointments in sequence — the undo stack holds up to **50 entries**, so you have significant depth to work with.
+  </Accordion>
+
+  <Accordion title="Can I undo a specific (non-latest) appointment?">
+    No. Undo always reverses the most recently scheduled appointment that has not already been undone. The undo stack is strictly LIFO — there is no way to skip over a recent entry and target an older one.
+  </Accordion>
+
+  <Accordion title="Patient and doctor IDs seem non-sequential after deletions — why?">
+    IDs are assigned sequentially starting from 1 and are **never reused**. Deleting a patient or doctor removes that record from the system but does not reclaim the ID. The next patient or doctor you add always receives the next available integer. For example, if you add patients 1, 2, and 3 and then delete patient 2, your next added patient receives ID 4 — not 2.
+  </Accordion>
+
+  <Accordion title="Can two doctors or patients have the same name?">
+    Yes. The system identifies every record by its unique integer ID, not by name. You can add multiple patients or doctors with identical names; each will receive a different ID and be treated as a separate record. When you look up or reference records, always use the ID rather than the name.
+  </Accordion>
+
+  <Accordion title="My doctor or patient name was cut off. Why?">
+    Names are limited to **47 usable characters** (the `NAME_LEN` constant is 48, which includes the null terminator). Any input beyond that length is silently truncated when it is read in. Similarly, date/time strings are limited to **63 usable characters** (`TIME_LEN = 64`). If you need to represent longer values, consider using abbreviations or a compact format.
+  </Accordion>
+
+  <Accordion title="I see [deleted] in the schedule — what does it mean?">
+    A scheduled appointment stores only the patient ID and doctor ID, not a copy of the name. When the system displays an appointment (via option 10 or during an undo with option 9), it looks up the current name by ID. If that patient or doctor has since been deleted, the lookup fails and the system substitutes `[deleted]` in place of the name. The appointment record itself is unaffected — only the name resolution is unavailable.
+  </Accordion>
+
+</AccordionGroup>

@@ -1,0 +1,63 @@
+---
+title: "Hospital Management System: DSA-Powered Patient Care"
+sidebarTitle: "Introduction"
+description: "An overview of the Hospital Management System — what it does, who it's for, and which data structures power each feature."
+---
+
+This console application gives hospital administrative staff a single, fast interface for handling the day-to-day mechanics of patient care coordination. Instead of a database engine or an external framework, every piece of state lives in hand-crafted C data structures — a linked list, a binary search tree, a circular queue, and a stack — so the program compiles to a small binary, runs on any POSIX terminal, and keeps all operations at predictable time complexity.
+
+---
+
+## What the System Does
+
+The system centres on four core workflows that mirror the real-world flow of a patient's journey through a hospital.
+
+**Patient management.** You can add a new patient by name, delete an existing patient by ID, and list every registered patient at any time. The registry acts as the authoritative source of patient identities throughout the rest of the system.
+
+**Doctor registry.** You can add doctors by name; the system assigns each one a unique ID automatically. Listing doctors always displays them in ascending ID order. When an appointment is scheduled, the system performs a live look-up against the registry to confirm the doctor still exists before confirming the booking.
+
+**Appointment queuing.** When a patient needs to see a doctor, you submit an appointment *request* rather than booking it directly. Requests enter a first-in, first-out queue and wait until a staff member chooses to process them. Processing dequeues the oldest request, validates the patient and doctor IDs, and converts the request into a confirmed scheduled appointment. If either ID has been deleted in the meantime, the request is silently discarded.
+
+**Schedule management with undo.** Every confirmed appointment is recorded in a schedule list and its ID is pushed onto an undo stack. If you schedule an appointment by mistake, a single menu command pops the stack and marks that appointment as *undone* — no data is permanently lost, and the full history remains visible in the schedule view.
+
+---
+
+## Data Structures at a Glance
+
+Each feature maps directly to a data structure chosen to match its access patterns.
+
+| Feature | Data Structure | Key Properties |
+|---|---|---|
+| **Patient registry** | Singly Linked List | O(n) traversal; O(1) insertion at head; pointer-linked nodes freed individually |
+| **Doctor registry** | Binary Search Tree (BST) | O(log n) average look-up by ID; in-order traversal yields sorted output |
+| **Appointment requests** | Circular Queue | FIFO ordering; fixed capacity of **8** slots; wrap-around index arithmetic |
+| **Undo scheduling** | Stack | LIFO ordering; fixed capacity of **50** entries; O(1) push and pop |
+
+<Note>
+  Both the queue and the stack use fixed-size arrays allocated at program start. If the appointment request queue is full (8 pending requests) or the undo stack is full (50 scheduled appointments), the system prints a warning and refuses the operation. Process or undo existing entries to free space.
+</Note>
+
+---
+
+## Key Capabilities
+
+<CardGroup cols={2}>
+  <Card title="Auto-Incremented IDs" icon="hashtag">
+    Patients and doctors each receive a unique, monotonically increasing integer ID the moment they are added, so you never have to assign or track IDs manually.
+  </Card>
+  <Card title="FIFO Request Processing" icon="arrow-right-arrow-left">
+    Appointment requests are always handled in the order they were submitted. No request can jump the queue, ensuring fair and auditable scheduling.
+  </Card>
+  <Card title="One-Step Undo" icon="rotate-left">
+    The most recently confirmed appointment can be cancelled instantly with a single menu selection, letting staff correct mistakes without editing records by hand.
+  </Card>
+  <Card title="Validated Scheduling" icon="shield-check">
+    Before confirming any appointment, the system verifies that both the patient and the doctor still exist in their respective registries. Stale requests are discarded cleanly.
+  </Card>
+</CardGroup>
+
+---
+
+## What to Read Next
+
+Now that you understand what the system does and how its internals are organised, head over to the [Quick Start guide](/quickstart) to compile the application and walk through your first end-to-end workflow — from adding a doctor to scheduling and undoing your first appointment.

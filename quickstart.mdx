@@ -1,47 +1,172 @@
 ---
-title: "Quickstart"
-description: "Begin with a guide on the fastest path to a successful outcome"
+title: "Get Started with Hospital Management System"
+sidebarTitle: "Quickstart"
+description: "Compile and run the Hospital Management System in under five minutes, then add your first doctor, patient, and appointment request."
 ---
 
-Describe how someone begins using your product. What is the first thing they need to do? Are there any prerequisites?
-
-A quickstart should take someone from zero to using your product. They'll get a quick win and a sense of what they can accomplish.
+By the end of this guide you will have compiled the Hospital Management System from its single C source file, launched the interactive console menu, registered a doctor and a patient, queued an appointment request, processed (scheduled) it, and confirmed it appears in the scheduled-appointments list.
 
 ## Prerequisites
 
-Before you begin, you must have:
+Before you begin, make sure you have the following installed:
 
-- Requirement one (for example, Node.js 18+, a free account, an API key)
-- Requirement two (for example, a compatible device, a compatible browser, a compatible operating system)
+- **A C compiler** — GCC or Clang
+- **A terminal / command prompt**
 
-## Get started
+<Note>
+  **Windows users:** The program targets a POSIX-style terminal. Use
+  [MinGW](https://www.mingw-w64.org/) to get GCC on Windows, or run everything
+  inside [WSL (Windows Subsystem for
+  Linux)](https://learn.microsoft.com/en-us/windows/wsl/install) for the
+  smoothest experience.
+</Note>
+
+## Compile the Program
 
 <Steps>
-  <Step title="Install">
-    Describe how to install your product or sign up.
-
-    ```bash
-    npm install your-package
-    ```
+  <Step title="Download the source file">
+    The entire application lives in one file: `project.c`. Place it in a
+    working directory of your choice — no build system or additional dependencies
+    are required.
   </Step>
-  <Step title="Configure">
-    Describe any setup or configuration needed before first use.
 
-    ```bash
-    your-cli init
-    ```
+  <Step title="Compile">
+    Open your terminal, navigate to the directory containing `project.c`, and
+    run the compiler.
+
+    <CodeGroup>
+      ```bash GCC
+      gcc -o hospital project.c
+      ```
+
+      ```bash Clang
+      clang -o hospital project.c
+      ```
+    </CodeGroup>
+
+    Both commands produce an executable named `hospital` in the same directory.
   </Step>
-  <Step title="Run it">
-    Show the first thing a user does to see it working.
+
+  <Step title="Run the program">
+    Launch the executable:
 
     ```bash
-    your-cli start
+    ./hospital
     ```
+
+    The main menu prints immediately:
+
+    ```text
+    === Hospital Simple Menu ===
+    1  - Add patient
+    2  - Delete patient
+    3  - List patients
+    4  - Add doctor 
+    5  - List doctors
+    6  - Enqueue appointment request
+    7  - Show request queue
+    8  - Process next request (schedule)
+    9  - Undo last scheduled appointment
+    10 - Show scheduled appointments 
+    0  - Exit
+    Choose an option:
+    ```
+
+    The menu re-displays after every action so you always know where you are.
   </Step>
 </Steps>
 
-<Tip>
-  Give people a way to get help. This could be a link to a support page, a chat with a customer support agent, or a forum for your product.
+## Your First Session
 
-  Example: Need help? Reach out to us at [support@yourcompany.com](mailto:support@yourcompany.com).
-</Tip>
+Work through the steps below without exiting between them — each step builds on the data created in the previous one.
+
+<Steps>
+  <Step title="Add a doctor">
+    Choose option `4` and type the doctor's name when prompted. The system
+    assigns an auto-incrementing ID starting at `1`.
+
+    ```text
+    Choose an option: 4
+    Enter doctor name: Dr. Smith
+    Added doctor 1 : Dr. Smith
+    ```
+  </Step>
+
+  <Step title="Add a patient">
+    Choose option `1` and type the patient's full name. Patient IDs also start
+    at `1` and increment with each addition.
+
+    ```text
+    Choose an option: 1
+    Enter patient name: Alice Johnson
+    Added patient 1 : Alice Johnson
+    ```
+  </Step>
+
+  <Step title="Enqueue an appointment request">
+    Choose option `6`. The program asks for the patient ID, doctor ID, and a
+    free-form date/time string. Use the IDs that were printed in the previous
+    two steps.
+
+    ```text
+    Choose an option: 6
+    Enter patient id: 1
+    Enter doctor id: 1
+    Enter date/time (string): 2024-06-01 09:00
+    Enqueued request #1  patient 1 -> doctor 1  at 2024-06-01 09:00
+    ```
+
+    Requests are held in a circular queue (capacity 8). You can inspect the
+    queue at any time with option `7`.
+  </Step>
+
+  <Step title="Process (schedule) the request">
+    Choose option `8`. The system dequeues the oldest request, looks up the
+    patient and doctor records, creates a scheduled appointment, and pushes the
+    new appointment ID onto the undo stack.
+
+    ```text
+    Choose an option: 8
+    Scheduled appointment s1: patient Alice Johnson (p1) -> doctor Dr. Smith (d1) at 2024-06-01 09:00 (from req #1)
+    ```
+
+    If either the patient or the doctor ID in a request no longer exists, the
+    system discards that request and prints a warning — no appointment is
+    created.
+  </Step>
+
+  <Step title="View scheduled appointments">
+    Choose option `10` to see every appointment that has been scheduled in this
+    session, along with its current status (`active` or `undone`).
+
+    ```text
+    Choose an option: 10
+    Scheduled appointments:
+      s1: Alice Johnson (p1) -> Dr. Smith (d1) at 2024-06-01 09:00 [active]
+    ```
+
+    When you are finished, enter `0` to exit cleanly. The program frees all
+    allocated memory and prints `Goodbye`.
+  </Step>
+</Steps>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Core Concepts" icon="database" href="/concepts/data-structures">
+    Learn how the Queue, Stack, BST, and Linked List data structures power each
+    feature of the system.
+  </Card>
+  <Card title="Full Menu Reference" icon="list" href="/usage/menu-reference">
+    Detailed description of every menu option, its inputs, outputs, and edge
+    cases.
+  </Card>
+  <Card title="Typical Workflow" icon="arrow-right-arrow-left" href="/usage/workflow">
+    See a complete end-to-end scenario — from registering staff and patients
+    through scheduling multiple appointments.
+  </Card>
+  <Card title="Undo Appointments" icon="rotate-left" href="/usage/undo">
+    Use the stack-backed undo feature to cancel the most recently scheduled
+    appointment in one step.
+  </Card>
+</CardGroup>
