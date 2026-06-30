@@ -1,7 +1,7 @@
 ---
-title: "Frequently Asked Questions"
+title: "Frequently Asked Questions — Hospital Management System"
 sidebarTitle: "FAQ"
-description: "Answers to common questions about using the Hospital Management System: data persistence, capacity limits, IDs, and error messages."
+description: "Answers to common questions about using the Hospital Management System: persistence, capacity limits, ID assignment, and error messages."
 ---
 
 Here are quick answers to the most common questions about using the Hospital Management System. If you are troubleshooting an unexpected message or behaviour, start here before diving into the full reference.
@@ -34,7 +34,7 @@ Here are quick answers to the most common questions about using the Hospital Man
   </Accordion>
 
   <Accordion title="Can I undo a specific (non-latest) appointment?">
-    No. Undo always reverses the most recently scheduled appointment that has not already been undone. The undo stack is strictly LIFO — there is no way to skip over a recent entry and target an older one.
+    No. Undo always reverses the most recently scheduled appointment that has not already been undone. The undo stack is strictly last-in, first-out — there is no way to skip over a recent entry and target an older one.
   </Accordion>
 
   <Accordion title="Patient and doctor IDs seem non-sequential after deletions — why?">
@@ -46,7 +46,7 @@ Here are quick answers to the most common questions about using the Hospital Man
   </Accordion>
 
   <Accordion title="My doctor or patient name was cut off. Why?">
-    Names are limited to **47 usable characters** (the `NAME_LEN` constant is 48, which includes the null terminator). Any input beyond that length is silently truncated when it is read in. Similarly, date/time strings are limited to **63 usable characters** (`TIME_LEN = 64`). If you need to represent longer values, consider using abbreviations or a compact format.
+    Names are limited to **47 usable characters** (the buffer size is 48, which includes the null terminator). Any input beyond that length is silently truncated when it is read in. Similarly, date/time strings are limited to **63 usable characters** (the buffer size is 64). If you need to represent longer values, consider using abbreviations or a compact format.
   </Accordion>
 
   <Accordion title="I see [deleted] in the schedule — what does it mean?">

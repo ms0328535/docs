@@ -1,7 +1,7 @@
 ---
-title: "Hospital Management System: DSA-Powered Patient Care"
+title: "Hospital Management System: Patient and Doctor Console App"
 sidebarTitle: "Home"
-description: "Manage patients, doctors, and appointments with a fast console application powered by Queues, Stacks, and Binary Search Trees."
+description: "Manage patients, doctors, and appointments with a fast console C application powered by Queues, Stacks, and Binary Search Trees for healthcare staff."
 ---
 
 Welcome to the **Hospital Management System** — a lightweight, console-based application built entirely in C that helps hospital staff register patients, maintain a doctor registry, queue appointment requests, and schedule (or undo) appointments. Every feature is backed by a carefully chosen classic data structure, so the system stays fast and predictable even as your data grows.
@@ -62,16 +62,16 @@ Follow these steps to go from a fresh terminal to your first scheduled appointme
 ## Feature Highlights
 
 <CardGroup cols={2}>
-  <Card title="Patient Management" icon="bed-pulse">
+  <Card title="Patient Management" icon="bed-pulse" href="/introduction#patient-management">
     Add, remove, and list patients stored in a singly linked list. Each patient receives a unique auto-incremented ID the moment they are registered.
   </Card>
-  <Card title="Doctor Registry" icon="user-doctor">
+  <Card title="Doctor Registry" icon="user-doctor" href="/introduction#doctor-registry">
     Doctors are organised in a Binary Search Tree keyed by ID, enabling fast look-up during scheduling. An in-order traversal always displays them in sorted order.
   </Card>
-  <Card title="Appointment Queue" icon="clock-rotate-left">
+  <Card title="Appointment Queue" icon="clock-rotate-left" href="/introduction#appointment-queuing">
     Appointment requests are held in a circular FIFO queue with a capacity of 8 slots. Requests are processed one at a time in the order they were submitted.
   </Card>
-  <Card title="Undo Scheduling" icon="rotate-left">
+  <Card title="Undo Scheduling" icon="rotate-left" href="/introduction#schedule-management-with-undo">
     Every confirmed appointment is pushed onto a LIFO stack (capacity 50). Enter **9** at any time to instantly cancel the most recently scheduled appointment.
   </Card>
 </CardGroup>

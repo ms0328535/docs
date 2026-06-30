@@ -1,5 +1,5 @@
 ---
-title: "Typical Hospital Workflow: End-to-End Walkthrough"
+title: "End-to-End Workflow: Hospital Management System Session"
 sidebarTitle: "Workflow"
 description: "A step-by-step walkthrough of a complete hospital management session: registering staff and patients, queuing requests, and confirming appointments."
 ---
@@ -73,7 +73,7 @@ This walkthrough guides you through a realistic Hospital Management System sessi
       3 : Dr. Priya Nair
     ```
 
-    Patients appear most recently added first (linked list head). Doctors appear sorted by ID (BST in-order traversal).
+    Patients appear most recently added first. Doctors appear sorted in ascending ID order.
   </Step>
 
   <Step title="Queue Appointment Requests (Option 6)">
@@ -109,11 +109,11 @@ This walkthrough guides you through a realistic Hospital Management System sessi
       #2  p3 -> d1  @ 2025-08-10 11:30
     ```
 
-    Requests are listed in FIFO order. Request **#1** will be processed first.
+    Requests are listed oldest first. Request **#1** will be processed first.
   </Step>
 
   <Step title="Process Each Request (Option 8)">
-    Convert each pending request into a confirmed scheduled appointment by choosing option **8**. The system validates both IDs, creates the appointment, and pushes it onto the undo stack.
+    Convert each pending request into a confirmed scheduled appointment by choosing option **8**. The system validates both IDs and creates the appointment.
 
     ```text
     === Hospital Simple Menu ===

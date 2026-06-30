@@ -1,10 +1,10 @@
 ---
-title: "System Limits and Capacity Reference"
+title: "System Capacity Limits for the Hospital Management System"
 sidebarTitle: "System Limits"
-description: "Hard limits for the Hospital Management System: queue capacity, undo stack depth, schedule slots, and name length constraints."
+description: "Compile-time capacity limits for the Hospital Management System, covering the request queue, undo stack, schedule storage, and name fields."
 ---
 
-The Hospital Management System enforces fixed, compile-time capacities defined as C preprocessor macros at the top of `project.c`. None of these values can be changed at runtime — they are baked into the binary at build time. Understanding them helps you plan your session and avoid unexpected errors.
+The Hospital Management System enforces fixed, compile-time capacities defined as preprocessor constants in the source file. None of these values can be changed at runtime — they are baked into the binary at build time. Understanding them helps you plan your session and avoid unexpected errors.
 
 ## Capacity Constants
 
@@ -40,7 +40,7 @@ If you successfully schedule 50 appointments without calling option **9** even o
 undo stack full
 ```
 
-The scheduling operation is still attempted for the queue item (the appointment record is written and the request is consumed), but the new appointment's ID is not pushed — meaning it cannot be undone. This situation is only reached after 50 consecutive process-without-undo cycles, which is uncommon in normal use.
+The appointment record is still written and the request is consumed, but the new appointment's ID is not tracked for undo — meaning that specific appointment cannot be reversed. This situation is only reached after 50 consecutive process-without-undo cycles, which is uncommon in normal use.
 
 ---
 

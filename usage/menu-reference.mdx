@@ -1,7 +1,7 @@
 ---
-title: "Menu Reference: All 10 Options Explained"
+title: "Hospital Management System: All 10 Menu Options Guide"
 sidebarTitle: "Menu Reference"
-description: "Complete reference for every option in the Hospital Management System console menu, including inputs, outputs, and edge cases."
+description: "Reference guide covering all 10 console menu options in the Hospital Management System, with required inputs, exact output messages, and edge cases."
 ---
 
 Each time you run the Hospital Management System, the application prints a numbered menu and waits for your input. Enter the number that corresponds to the action you want to perform and press **Enter** to execute it. The menu repeats after every action so you can continue working until you choose **0** to exit.
@@ -36,7 +36,7 @@ Each time you run the Hospital Management System, the application prints a numbe
     **Notes:**
     - IDs start at 1 and increment with every successful addition.
     - Deleted patient IDs are never reused; the next addition always receives the next available integer.
-    - Patients are stored internally as a singly linked list, with the most recently added patient at the head.
+    - Patients are listed most recently added first when you use option 3.
   </Accordion>
 
   <Accordion title="2 — Delete Patient">
@@ -71,7 +71,7 @@ Each time you run the Hospital Management System, the application prints a numbe
       ...
     ```
 
-    Patients are listed most recently added first, because the linked list is prepended on each addition.
+    Patients are listed most recently added first.
 
     **Output when no patients are registered:**
     ```text
@@ -91,7 +91,7 @@ Each time you run the Hospital Management System, the application prints a numbe
 
     **Notes:**
     - IDs start at 1 and increment with every successful addition.
-    - Doctors are stored in a Binary Search Tree (BST) keyed by ID, which means listing them (option 5) always produces output sorted by ID regardless of insertion order.
+    - Listing doctors (option 5) always produces output sorted in ascending ID order regardless of insertion order.
   </Accordion>
 
   <Accordion title="5 — List Doctors">
@@ -106,7 +106,7 @@ Each time you run the Hospital Management System, the application prints a numbe
       ...
     ```
 
-    Doctors are always listed in ascending ID order because the output is produced by an in-order traversal of the BST.
+    Doctors are always listed in ascending ID order.
 
     **Output when no doctors are registered:**
     ```text
@@ -115,7 +115,7 @@ Each time you run the Hospital Management System, the application prints a numbe
   </Accordion>
 
   <Accordion title="6 — Enqueue Appointment Request">
-    Adds a new appointment request to the end of the circular FIFO queue.
+    Adds a new appointment request to the end of the pending request queue.
 
     **Inputs (prompted in sequence):**
     1. Patient ID (integer)
@@ -138,7 +138,7 @@ Each time you run the Hospital Management System, the application prints a numbe
   </Accordion>
 
   <Accordion title="7 — Show Request Queue">
-    Displays all pending appointment requests in FIFO order (oldest first).
+    Displays all pending appointment requests in order from oldest to newest.
 
     **Input:** None.
 
@@ -185,11 +185,11 @@ Each time you run the Hospital Management System, the application prints a numbe
     Scheduled storage full
     ```
 
-    Each successfully scheduled appointment is pushed onto the undo stack so you can reverse it with option 9.
+    Each successfully scheduled appointment is recorded so you can reverse it with option 9.
   </Accordion>
 
   <Accordion title="9 — Undo Last Scheduled Appointment">
-    Pops the most recently scheduled appointment ID from the undo stack and marks that appointment as **undone**.
+    Reverses the most recently scheduled appointment, marking it as **undone**.
 
     **Input:** None.
 
@@ -206,7 +206,7 @@ Each time you run the Hospital Management System, the application prints a numbe
     **Notes:**
     - The appointment record is not deleted; it remains visible in option 10 with status `undone`.
     - Undo is strictly last-in-first-out. You cannot selectively undo an older appointment.
-    - The undo stack holds up to 50 entries.
+    - The undo history holds up to 50 entries.
   </Accordion>
 
   <Accordion title="10 — Show Scheduled Appointments">
@@ -231,7 +231,7 @@ Each time you run the Hospital Management System, the application prints a numbe
   </Accordion>
 
   <Accordion title="0 — Exit">
-    Ends the session, frees all allocated memory, and exits the program.
+    Ends the session and exits the program.
 
     **Input:** None.
 

@@ -14,10 +14,10 @@ Each entry in the queue stores:
 
 | Field | Description |
 |---|---|
-| Request number (`id`) | Auto-assigned sequential integer (#1, #2, …) |
-| Patient ID (`pid`) | The ID of the patient requesting the appointment |
-| Doctor ID (`did`) | The ID of the intended doctor |
-| Date/time (`t`) | A free-form string up to 63 characters |
+| Request number | Auto-assigned sequential integer (#1, #2, …) |
+| Patient ID | The ID of the patient requesting the appointment |
+| Doctor ID | The ID of the intended doctor |
+| Date/time | A free-form string up to 63 characters |
 
 When all 8 slots are occupied, any further enqueue attempt is rejected immediately:
 
@@ -48,8 +48,8 @@ Select **option 8** to dequeue the oldest pending request and attempt to confirm
 The system:
 
 1. Removes the front request from the queue.
-2. Looks up the patient ID in the linked list.
-3. Looks up the doctor ID in the BST.
+2. Looks up the patient ID in the patient list.
+3. Looks up the doctor ID in the doctor registry.
 4. If the patient is not found, discards the request:
    ```text
    Patient <id> not found — discarding request
@@ -58,7 +58,7 @@ The system:
    ```text
    Doctor <id> not found — discarding request
    ```
-6. If both are found, creates a confirmed scheduled appointment, assigns it a schedule ID (`s1`, `s2`, …), and pushes that ID onto the undo stack.
+6. If both are found, creates a confirmed scheduled appointment, assigns it a schedule ID (`s1`, `s2`, …), and adds it to the undo stack.
 
 A successful confirmation prints:
 
@@ -68,6 +68,10 @@ Scheduled appointment s1: patient Alice Nguyen (p1) -> doctor Dr. Patel (d2) at 
 ```
 
 A discarded request is removed from the queue permanently. You must re-enqueue it manually if you still want the appointment scheduled.
+
+<Note>
+The confirmed appointment list holds up to **100 entries** (`SCHED_CAP = 100`). Once this limit is reached, further processing attempts are rejected until the application is restarted.
+</Note>
 
 ## Viewing the Queue — Option 7
 
@@ -103,6 +107,16 @@ If no appointments have been confirmed yet:
 
 ```text
 (no scheduled appointments)
+```
+
+## Undoing a Scheduled Appointment — Option 9
+
+Select **option 9** to reverse the most recently confirmed appointment. The system uses a **LIFO stack** to track the order of confirmations — the last appointment scheduled is always the first to be undone.
+
+The appointment's status changes from `[active]` to `[undone]` in the schedule list. The original request is **not** returned to the queue. If there is nothing left to undo, the system prints:
+
+```text
+Nothing to undo
 ```
 
 <Note>

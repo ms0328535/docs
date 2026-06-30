@@ -1,7 +1,7 @@
 ---
-title: "Data Structures Powering the Hospital System"
+title: "Data Structures Behind the Hospital Management System"
 sidebarTitle: "Data Structures"
-description: "How Queues, Stacks, Binary Search Trees, and Linked Lists each serve a specific role in the Hospital Management System's design."
+description: "Understand the four data structures — linked list, circular queue, stack, and BST — that drive the Hospital Management System's core features."
 ---
 
 Every major feature in the Hospital Management System maps to a specific data structure chosen for its performance characteristics. Appointment requests demand fairness, so they use a queue. The undo feature needs to reverse decisions in reverse order, so it uses a stack. Doctor lookup must stay fast as the registry grows, so doctors live in a binary search tree. Patient records require constant-time insertion and simple traversal, so patients are stored in a linked list. Understanding which structure backs each feature helps you reason about system limits and behavior.
@@ -10,7 +10,7 @@ Every major feature in the Hospital Management System maps to a specific data st
 
 The request queue uses **FIFO (First-In, First-Out)** ordering: the first patient to submit a request is the first to have it scheduled. This guarantees fairness across all incoming appointment requests.
 
-Internally the queue is a **circular array of capacity 8** (`QCAP = 8`). Two integer pointers, `qf` (front) and `qr` (rear), track where the next dequeue and enqueue happen respectively. When both are `-1` the queue is empty. Each new request advances `qr` by one position, wrapping around to index 0 after index 7.
+The queue is a **circular array with a fixed capacity of 8** (`QCAP = 8`). Two integer pointers track where the next dequeue and enqueue happen respectively. When both are `-1` the queue is empty. Each new request advances the rear pointer by one position, wrapping around to index 0 after index 7.
 
 ```
   Index:  0    1    2    3    4    5    6    7
@@ -18,11 +18,11 @@ Internally the queue is a **circular array of capacity 8** (`QCAP = 8`). Two int
         │    │ R1 │ R2 │ R3 │    │    │    │    │
         └────┴────┴────┴────┴────┴────┴────┴────┘
                  ↑              ↑
-                qf            qr
+               front           rear
          (next to dequeue)  (last enqueued)
 ```
 
-When `qf == (qr + 1) % QCAP` the queue is full. Any further enqueue attempt prints:
+When all 8 slots are occupied, the queue is full. Any further enqueue attempt prints:
 
 ```text
 Request queue is full
@@ -34,13 +34,7 @@ and the request is dropped without affecting existing entries.
 
 The undo stack uses **LIFO (Last-In, First-Out)** ordering: the most recently scheduled appointment is always the one that gets reversed when you undo.
 
-The stack is an **array-based structure of capacity 50** (`STCAP = 50`), managed with a single top pointer `stp` initialized to `-1` (empty). When `process_one` successfully creates a scheduled appointment it pushes the new schedule ID onto the stack:
-
-```c
-st_push(sid);   // push schedule ID after successful processing
-```
-
-Choosing option 9 (undo) calls `st_pop`, retrieves that ID, finds the matching entry in the schedule array, and sets its `active` flag to `0`. If the stack is already empty, the system prints:
+The stack is an **array-based structure with a capacity of 50** (`STCAP = 50`), managed with a single top pointer initialized to `-1` (empty). When option 8 successfully creates a scheduled appointment, it pushes the new schedule ID onto the stack. Choosing option 9 (undo) pops that ID, finds the matching entry in the schedule list, and marks it inactive. If the stack is already empty, the system prints:
 
 ```text
 Nothing to undo
@@ -56,7 +50,7 @@ undo stack full
 
 Doctors are stored in a **BST keyed by their numeric ID**. Because IDs are assigned sequentially starting at 1, successive insertions build a balanced tree under normal use, giving **O(log n)** lookup time as the registry grows.
 
-Insertion follows standard BST rules: a new doctor with a lower ID goes to the left subtree; a higher ID goes to the right. Because IDs are auto-assigned and always increment, the left-branch path (`id <= r->id`) is used only if an ID somehow equals an existing one — in practice each insertion extends the rightmost branch.
+Insertion follows standard BST rules: a new doctor with a lower ID goes to the left subtree; a higher ID goes to the right. Because IDs are auto-assigned and always increment, in practice each insertion extends the rightmost branch.
 
 ```
        1 (Dr. Smith)
@@ -66,20 +60,20 @@ Insertion follows standard BST rules: a new doctor with a lower ID goes to the l
            3 (Dr. Jones)
 ```
 
-**In-order traversal** (left → root → right) visits every node in ascending ID order, so option 5 always lists doctors sorted by ID. When processing an appointment request, `bst_find` descends the tree from the root, moving left when the target ID is smaller and right when larger, until it finds the node or reaches a `NULL` pointer.
+**In-order traversal** (left → root → right) visits every node in ascending ID order, so option 5 always lists doctors sorted by ID. When processing an appointment request, the system descends the tree from the root, moving left when the target ID is smaller and right when larger, until it finds the node or reaches a dead end.
 
 ## Singly Linked List — Patient Registry
 
-Patients are stored in a **singly linked list** where each node holds an ID, a name, and a `next` pointer. New patients are inserted at the **head of the list (prepend)**, making every addition an **O(1)** operation regardless of how many patients already exist.
+Patients are stored in a **singly linked list** where each node holds an ID, a name, and a pointer to the next node. New patients are inserted at the **head of the list (prepend)**, making every addition an **O(1)** operation regardless of how many patients already exist.
 
 ```
 phead → [P3 | "Alice" | →] → [P2 | "Bob" | →] → [P1 | "Carol" | NULL]
          (most recent)                              (oldest)
 ```
 
-Deleting a patient requires traversing the list from the head to find the target node, updating the predecessor's `next` pointer to skip over it, and freeing the memory. Because this is a singly linked list there is no shortcut — deletion is **O(n)** in the worst case.
+Deleting a patient requires traversing the list from the head to find the target node, updating the predecessor's pointer to skip over it, and freeing the memory. Because this is a singly linked list there is no shortcut — deletion is **O(n)** in the worst case.
 
-The same traversal is used by `p_find` during appointment processing: the system walks from `phead` until it finds the matching ID or exhausts the list.
+The same traversal is used during appointment processing: the system walks from the head until it finds the matching patient ID or exhausts the list.
 
 ## Summary
 
@@ -89,3 +83,4 @@ The same traversal is used by `p_find` during appointment processing: the system
 | Undo history | Array Stack | 50 entries | LIFO |
 | Doctor registry | Binary Search Tree | Unbounded | Sorted by ID |
 | Patient registry | Singly Linked List | Unbounded | Most-recently-added first |
+| Confirmed appointments | Fixed Array | 100 entries | Insertion order |

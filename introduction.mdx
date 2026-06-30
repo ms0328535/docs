@@ -1,7 +1,7 @@
 ---
-title: "Hospital Management System: DSA-Powered Patient Care"
+title: "Hospital Management System: Features and Architecture"
 sidebarTitle: "Introduction"
-description: "An overview of the Hospital Management System — what it does, who it's for, and which data structures power each feature."
+description: "An overview of the Hospital Management System — what it does, who it is for, and how Queues, Stacks, BSTs, and Linked Lists power each feature."
 ---
 
 This console application gives hospital administrative staff a single, fast interface for handling the day-to-day mechanics of patient care coordination. Instead of a database engine or an external framework, every piece of state lives in hand-crafted C data structures — a linked list, a binary search tree, a circular queue, and a stack — so the program compiles to a small binary, runs on any POSIX terminal, and keeps all operations at predictable time complexity.
@@ -42,16 +42,16 @@ Each feature maps directly to a data structure chosen to match its access patter
 ## Key Capabilities
 
 <CardGroup cols={2}>
-  <Card title="Auto-Incremented IDs" icon="hashtag">
+  <Card title="Auto-Incremented IDs" icon="hashtag" href="/quickstart#add-a-doctor">
     Patients and doctors each receive a unique, monotonically increasing integer ID the moment they are added, so you never have to assign or track IDs manually.
   </Card>
-  <Card title="FIFO Request Processing" icon="arrow-right-arrow-left">
+  <Card title="FIFO Request Processing" icon="arrow-right-arrow-left" href="/quickstart#enqueue-an-appointment-request">
     Appointment requests are always handled in the order they were submitted. No request can jump the queue, ensuring fair and auditable scheduling.
   </Card>
-  <Card title="One-Step Undo" icon="rotate-left">
+  <Card title="One-Step Undo" icon="rotate-left" href="/quickstart#view-scheduled-appointments">
     The most recently confirmed appointment can be cancelled instantly with a single menu selection, letting staff correct mistakes without editing records by hand.
   </Card>
-  <Card title="Validated Scheduling" icon="shield-check">
+  <Card title="Validated Scheduling" icon="shield-check" href="/quickstart#process-schedule-the-request">
     Before confirming any appointment, the system verifies that both the patient and the doctor still exist in their respective registries. Stale requests are discarded cleanly.
   </Card>
 </CardGroup>

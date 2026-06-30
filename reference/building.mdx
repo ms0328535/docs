@@ -1,7 +1,7 @@
 ---
-title: "Building from Source"
+title: "Building the Hospital Management System from Source"
 sidebarTitle: "Building"
-description: "How to compile the Hospital Management System from its single C source file on Linux, macOS, and Windows using GCC or Clang."
+description: "How to compile the Hospital Management System from its single C source file on Linux, macOS, and Windows using GCC or Clang — no build system required."
 ---
 
 The entire Hospital Management System is contained in a single C source file — `project.c` — with no external libraries or third-party dependencies. Any C99-compatible compiler can build it in one command. You do not need a build system such as Make or CMake.
@@ -62,14 +62,14 @@ The default build command works without any extra flags. The following optional 
 Example using all three:
 
 ```bash
-gcc -Wall -Wextra -O2 -o hospital project.c
+gcc -Wall -Wextra -O2 -g -o hospital project.c
 ```
 
 You can mix and match these flags freely. For a production build, `-O2` is sufficient. For debugging, use `-g` and omit `-O2`.
 
 ## Verifying the Build
 
-Run the compiled binary and check that the menu appears:
+Run the compiled binary and check that the main menu appears:
 
 ```bash
 ./hospital

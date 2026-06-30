@@ -1,7 +1,7 @@
 ---
-title: "Doctor Registry: Managing Doctor Availability"
+title: "Doctor Registry: Adding and Looking Up Doctors by ID"
 sidebarTitle: "Doctors"
-description: "How the Hospital Management System maintains a doctor registry using a Binary Search Tree with auto-assigned IDs and sorted listing."
+description: "How the Hospital Management System maintains a doctor registry using a Binary Search Tree with auto-assigned IDs and in-order sorted listing."
 ---
 
 The Hospital Management System stores every doctor in a **Binary Search Tree (BST)** keyed by an auto-assigned numeric ID. The BST structure enables fast lookup — O(log n) — when the system validates a doctor during appointment processing. You never choose an ID yourself; the system assigns the next available integer starting at **1** each time you add a doctor.
@@ -50,7 +50,7 @@ If no doctors have been registered yet, the system prints:
 
 ## Doctor IDs
 
-Doctor IDs are **auto-assigned and never reused**. The internal counter (`dnext`) increments with every addition and is never reset, even if you were to remove a doctor. Record the ID printed immediately after adding a doctor — you need it when queuing an appointment request (option 6).
+Doctor IDs are **auto-assigned and never reused**. The ID counter increments with every addition and is never reset. Record the ID printed immediately after adding a doctor — you need it when queuing an appointment request (option 6).
 
 <Tip>
 Run **option 5** to view all doctors and their IDs before creating appointment requests. This prevents you from accidentally supplying an ID that does not match the intended doctor.
@@ -58,9 +58,9 @@ Run **option 5** to view all doctors and their IDs before creating appointment r
 
 ## Looking Up Doctors
 
-When you process an appointment request (option 8), the system calls `bst_find` to locate the doctor by ID. Starting at the BST root, it moves **left** when the target ID is smaller than the current node and **right** when it is larger, reaching the correct node in **O(log n)** comparisons.
+When you process an appointment request (option 8), the system locates the doctor by ID. Starting at the BST root, it moves **left** when the target ID is smaller than the current node and **right** when it is larger, reaching the correct node in **O(log n)** comparisons.
 
-If the doctor ID stored in a request no longer exists in the BST at the time of processing, the system discards that request and prints:
+If the doctor ID stored in a request no longer exists in the registry at the time of processing, the system discards that request and prints:
 
 ```text
 Doctor <id> not found — discarding request

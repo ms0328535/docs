@@ -1,19 +1,19 @@
 ---
-title: "Undo a Scheduled Appointment"
+title: "Reverse a Scheduled Appointment Using the Undo Option"
 sidebarTitle: "Undo"
-description: "How to reverse a scheduling decision using the undo stack in the Hospital Management System — what gets undone and what the limits are."
+description: "Use option 9 to reverse a scheduling mistake in the Hospital Management System. Covers undo limits, what changes, and what happens to the original request."
 ---
 
-The Hospital Management System maintains a LIFO (last-in, first-out) undo stack alongside the appointment schedule. Whenever you need to reverse a scheduling decision, choose option **9** from the menu. The system deactivates the most recently created active appointment — without deleting any data — so you always have a full audit trail of what happened during the session.
+The Hospital Management System lets you reverse a scheduling decision at any time by choosing option **9** from the menu. The system deactivates the most recently created appointment — without deleting any data — so you always have a full audit trail of what happened during the session.
 
 ## How Undo Works
 
-The undo mechanism is built on a fixed-capacity integer stack that tracks scheduled appointment IDs in the order they were created.
+The undo mechanism tracks scheduled appointment IDs in the order they were created.
 
-- **Each time option 8 processes a request successfully**, the new appointment's ID is pushed onto the undo stack. This happens automatically; you do not need to do anything extra.
-- **Each time you choose option 9**, the system pops the top ID from the stack and looks up the corresponding appointment in the schedule array. It then sets that appointment's `active` flag to `0`, marking it as **undone**.
+- **Each time option 8 processes a request successfully**, the new appointment is recorded so it can be reversed. This happens automatically; you do not need to do anything extra.
+- **Each time you choose option 9**, the system identifies the most recently scheduled appointment and marks it as **undone**.
 - **Undone appointments remain visible** when you list the schedule with option 10. They appear alongside active appointments with the status label `undone` rather than `active`. This preserves a complete session history.
-- **The appointment's slot in the schedule array is never physically removed.** The record stays in place; only its status changes. This means the total count of stored appointments (active + undone) continues to grow toward the 100-appointment session limit.
+- **The appointment record is never deleted.** Only its status changes. This means the total count of stored appointments (active + undone) continues to grow toward the 100-appointment session limit.
 
 ## Using Undo
 
@@ -63,13 +63,13 @@ Appointment **s4** is now `undone`. The other three appointments are unaffected.
 
 ## Limits
 
-- **The undo stack holds up to 50 entries** (`STCAP = 50`). If you schedule 50 appointments without calling undo once, the stack is full and you will see `undo stack full` on any further scheduling attempt. In practice, a mix of scheduling and undoing keeps the stack well within capacity.
-- **Undo always targets the most recently scheduled active appointment.** You cannot skip over a recent entry to undo an older one. The stack is strictly LIFO.
-- **If the undo stack is empty** (no appointments have been scheduled, or all pushed IDs have already been popped), option 9 prints:
+- **The undo history holds up to 50 entries.** If you schedule 50 appointments without calling undo once, the history is full and you will see `undo stack full` on any further scheduling attempt. In practice, a mix of scheduling and undoing keeps the history well within capacity.
+- **Undo always targets the most recently scheduled appointment.** You cannot skip over a recent entry to undo an older one. Undo is strictly last-in-first-out.
+- **If there is nothing left to undo** (no appointments have been scheduled, or all have already been reversed), option 9 prints:
   ```text
   Nothing to undo
   ```
-- **If the same appointment ID is somehow popped twice** (for example, if the internal state is manipulated externally), the system detects that the appointment is already inactive and prints:
+- **If you call undo on an appointment that has already been undone**, the system detects this and prints:
   ```text
   Appointment s<id> already undone
   ```

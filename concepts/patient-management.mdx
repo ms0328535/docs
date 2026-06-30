@@ -1,7 +1,7 @@
 ---
-title: "Patient Management: Add, Find, and Remove Patients"
+title: "Patient Management: Add, Search, and Remove Records"
 sidebarTitle: "Patients"
-description: "How the Hospital Management System stores and manages patient records using a singly linked list with auto-assigned IDs."
+description: "How the Hospital Management System stores and manages patient records using a singly linked list, with auto-assigned IDs and prepend insertion."
 ---
 
 The Hospital Management System stores every patient as a node in a singly linked list. You never assign an ID yourself — the system automatically issues the next available integer starting at **1** and increments it with every new patient. This keeps patient records unique and easy to reference when you queue an appointment request.
@@ -67,6 +67,6 @@ Deleting a patient does **not** remove their scheduled appointments from the sch
 
 ## Patient IDs
 
-Patient IDs are **never reused**. The internal counter (`pnext`) only ever increments — even after a deletion the freed ID is gone permanently. For example, if you add patients 1 and 2, delete patient 1, and then add a new patient, the new patient receives ID 3, not 1.
+Patient IDs are **never reused**. The ID counter only ever increments — even after a deletion the freed ID is gone permanently. For example, if you add patients 1 and 2, delete patient 1, and then add a new patient, the new patient receives ID 3, not 1.
 
 Before referencing a patient in an appointment request, use **option 3** to list all current patients and confirm the correct ID. Writing down the ID printed immediately after adding a patient is the most reliable approach.
